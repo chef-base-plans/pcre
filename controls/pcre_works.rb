@@ -9,14 +9,18 @@ control 'core-plans-pcre' do
   impact 1.0
   title 'Ensure pcre binary is working as expected'
   desc '
-  We first check that the pcre binary we expect is present and then run version checks on both to verify that it is excecutable.
+  To test the binaries that pcre provides we first check for the installation directory.
+  Using this directory we then run checks to ensure the binary exists.
+  Then we test that the version of the binary we expect to be installed exists.
+    $ $PKG_PATH/bin/pcregrep --version
+      pcregrep version 8.42 2018-03-20
   '
 
   hab_pkg_path = command("hab pkg path #{plan_ident}")
   describe hab_pkg_path do
-    its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
     its('stderr') { should be_empty}
+    its('exit_status') { should eq 0 }
   end
 
   target_dir = File.join(hab_pkg_path.stdout.strip, base_dir)
@@ -28,9 +32,9 @@ control 'core-plans-pcre' do
     its('exit_status') { should eq 0 }
   end
 
-  pcretest_works = command("/bin/pcretest -C")
+  pcretest_works = command("#{File.join(target_dir, "pcretest")} -C")
   describe pcretest_works do
-    its('stdout') { should match /PCRE version [0-9]+.[0-9]+/ }
+    its('stdout') { should match /PCRE version #{hab_pkg_path.stdout.strip.split('/')[5]}/ }
     its('stderr') { should be_empty }
     its('exit_status') { should eq 0 }
   end
@@ -42,9 +46,9 @@ control 'core-plans-pcre' do
     its('exit_status') { should eq 0 }
   end
 
-  pcregrep_works = command("/bin/pcregrep -V")
+  pcregrep_works = command("#{File.join(target_dir, "pcregrep")} -V")
   describe pcregrep_works do
-    its('stdout') { should match /pcregrep version [0-9]+.[0-9]+/ }
+    its('stdout') { should match /pcregrep version #{hab_pkg_path.stdout.strip.split('/')[5]}/ }
     its('stderr') { should be_empty }
     its('exit_status') { should eq 0 }
   end
@@ -56,9 +60,9 @@ control 'core-plans-pcre' do
     its('exit_status') { should eq 0 }
   end
 
-  pcre_config_works = command("/bin/pcre-config --version")
+  pcre_config_works = command("#{File.join(target_dir, "pcre-config")} --version")
   describe pcre_config_works do
-    its('stdout') { should match /[0-9]+.[0-9]+/ }
+    its('stdout') { should match /#{hab_pkg_path.stdout.strip.split('/')[5]}/ }
     its('stderr') { should be_empty }
     its('exit_status') { should eq 0 }
   end
