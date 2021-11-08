@@ -11,7 +11,7 @@ proprietary software.\
 "
 pkg_upstream_url="http://www.pcre.org/"
 pkg_license=('bsd')
-pkg_source="https://ftp.pcre.org/pub/${pkg_name}/${pkg_name}-${pkg_version}.tar.bz2"
+pkg_source="https://sourceforge.net/projects/${pkg_name}/files/${pkg_name}-${pkg_version}.tar.bz2"
 pkg_shasum="4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8"
 pkg_deps=(
   core/glibc
